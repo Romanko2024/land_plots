@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace land_plots.Models
+namespace LandManagementApp.Models
 {
     internal class Settlement
     {

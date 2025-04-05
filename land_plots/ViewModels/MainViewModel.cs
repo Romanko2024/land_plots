@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace land_plots.ViewModels
+namespace LandManagementApp.ViewModels
 {
     internal class MainViewModel
     {
