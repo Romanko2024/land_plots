@@ -15,7 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LandManagementApp.ViewModels;
 
-namespace LandManagementApp.Views
+namespace LandManagementApp.ViewModels
 {
     public partial class MainWindow : Window
     {

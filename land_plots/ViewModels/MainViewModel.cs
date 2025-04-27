@@ -18,11 +18,32 @@ namespace LandManagementApp.ViewModels
     {
         // колекція ділянок для відображення в інтерфейсі (ObservableCollection автоматично оновлює GUI при змінах)
         [ObservableProperty]
-        private ObservableCollection<LandPlot> _landPlots = new ObservableCollection<LandPlot>();
+        private ObservableCollection<LandPlot> _landPlots = new();
 
         //поточна вибрана ділянка
         [ObservableProperty]
         private LandPlot _selectedPlot;
+
+        public MainViewModel()
+        {
+            //тест!!
+            //тестовий власник
+            var owner = new Owner("Іван", "Іваненко", new DateTime(1980, 5, 15));
+
+            //тестовий опис з полігоном
+            var polygon = new List<Point>
+            {
+                new Point(0, 0),
+                new Point(100, 0),
+                new Point(50, 50)
+            };
+            var description = new Description(5, polygon);
+
+            //тестова ділянка
+            var plot = new LandPlot(owner, description, PurposeType.Construction, 500000m);
+
+            LandPlots.Add(plot);
+        }
 
         //поточний населений пункт із завантаженими даними
         [ObservableProperty]

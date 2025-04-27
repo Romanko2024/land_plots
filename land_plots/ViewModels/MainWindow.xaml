@@ -1,0 +1,50 @@
+﻿<Window x:Class="LandManagementApp.ViewModels.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:LandManagementApp.ViewModels"
+        Title="Управління земельними ділянками" Height="600" Width="800">
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="5">
+            <Button Content="Додати ділянку" Command="{Binding AddPlotCommand}" Margin="5"/>
+            <Button Content="Зберегти та вийти" Command="{Binding SaveAndExitCommand}" Margin="5"/>
+        </StackPanel>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- список ділянок -->
+            <ListBox ItemsSource="{Binding LandPlots}" SelectedItem="{Binding SelectedPlot}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding GetSummary}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <!-- візуалізація полігонів -->
+            <Canvas Grid.Column="1">
+                <ItemsControl ItemsSource="{Binding LandPlots}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Polygon Points="{Binding Description.Polygon}" 
+                                     Stroke="Black" 
+                                     Fill="#60FF0000"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Canvas>
+        </Grid>
+    </DockPanel>
+</Window>
