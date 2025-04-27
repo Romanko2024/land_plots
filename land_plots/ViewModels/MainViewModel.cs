@@ -9,7 +9,7 @@ using LandManagementApp.Models;
 using System.Collections.ObjectModel; //для ObservableCollection
 using LandManagementApp.Utils;
 using System.Windows;
-using land_plots.Views;
+using LandManagementApp.Views;
 
 namespace LandManagementApp.ViewModels
 {
@@ -35,7 +35,7 @@ namespace LandManagementApp.ViewModels
             // створюємо нову порожню ділянку
             var newPlot = new LandPlot();
             // відкриваємо вікно редагування ділянки
-            var editWindow = new EditLandPlotWindow(newPlot);
+            var editWindow = new LandManagementApp.Views.EditLandPlotWindow(newPlot);
             // якщо користувач натиснув "ОК" (підтвердив введення)
             if (editWindow.ShowDialog() == true)
             {
