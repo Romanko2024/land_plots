@@ -14,6 +14,8 @@ namespace LandManagementApp.ViewModels
     // відповідає за логіку взаємодії з формою редагування.
     public partial class EditLandPlotViewModel : ObservableObject
     {
+        public static IEnumerable<PurposeType> PurposeTypes =>
+        Enum.GetValues(typeof(PurposeType)).Cast<PurposeType>();
         // властивість, що представляє поточну ділянку, яку редагуємо.
         //[ObservableProperty] автоматично генерує код для сповіщень про зміни властивості.
         [ObservableProperty]
