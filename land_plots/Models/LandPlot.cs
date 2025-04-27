@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -86,6 +87,18 @@ namespace LandManagementApp.Models
 
         //метод КОРОТКОГО представлення у вигляді тексту
         public string GetSummary() => $"{Owner.LastName} - {MarketValue:C}";
+        public LandPlot Clone()
+        {
+            return new LandPlot(
+                new Owner(this.Owner.FirstName, this.Owner.LastName, this.Owner.BirthDate),
+                new Description(
+                    this.Description.GroundWaterLevel,
+                    new List<Point>(this.Description.Polygon) // Глибока копія списку точок
+                ),
+                this.Purpose,
+                this.MarketValue
+            );
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
