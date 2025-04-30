@@ -57,7 +57,10 @@ namespace LandManagementApp.Models
         }
         //реалізац INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
-
+        public Description Clone()
+        {
+            return new Description(GroundWaterLevel, new List<Point>(Polygon));
+        }
         // сповіщення про зміни властивостей класу
         protected virtual void OnPropertyChanged(string propertyName)
         {

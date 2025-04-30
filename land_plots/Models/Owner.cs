@@ -87,7 +87,10 @@ namespace LandManagementApp.Models
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
+        public Owner Clone()
+        {
+            return new Owner(this.FirstName, this.LastName, this.BirthDate);
+        }
         //інтерфейс IDataErrorInfo
         //щоб не давало загальну помилку
         public string Error => null;

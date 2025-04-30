@@ -1,0 +1,42 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using LandManagementApp.Models;
+using System.Windows;
+
+namespace LandManagementApp.ViewModels
+{
+    public partial class EditDescriptionViewModel : ObservableObject
+    {
+        [ObservableProperty]
+        private Description _currentDescription;
+
+        public EditDescriptionViewModel(Description description)
+        {
+            CurrentDescription = description.Clone();
+        }
+
+        [RelayCommand]
+        private void Save(Window window)
+        {
+            if (CurrentDescription.HasErrors)
+            {
+                MessageBox.Show("Перевірте правильність даних.");
+                return;
+            }
+            window.DialogResult = true;
+            window.Close();
+        }
+
+        [RelayCommand]
+        private void Cancel(Window window)
+        {
+            window.DialogResult = false;
+            window.Close();
+        }
+    }
+}
