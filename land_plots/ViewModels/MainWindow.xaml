@@ -38,20 +38,25 @@
 
             <!-- візуалізація полігонів -->
             <Canvas Grid.Column="1">
-                <ItemsControl ItemsSource="{Binding LandPlots}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <Canvas/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Polygon Points="{Binding Description.Polygon}" 
-                                     Stroke="Black" 
-                                     Fill="#60FF0000"/>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <Viewbox Stretch="Uniform" Width="Auto" Height="Auto">
+                    <ItemsControl ItemsSource="{Binding LandPlots}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Polygon 
+                                    Points="{Binding Description.Polygon}"
+                                    Stroke="Black"
+                                    Fill="#60FF0000"
+                                    StrokeThickness="1"
+                                />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Viewbox>
             </Canvas>
         </Grid>
     </DockPanel>
