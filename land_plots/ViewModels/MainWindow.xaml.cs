@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LandManagementApp.ViewModels;
+using LandManagementApp.Utils;
 
 namespace LandManagementApp.ViewModels
 {
@@ -21,7 +22,13 @@ namespace LandManagementApp.ViewModels
     {
         public MainWindow()
         {
-            InitializeComponent(); //видалили лишній контсуктор
+            InitializeComponent();
+            Closing += MainWindow_Closing;
+        }
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            var vm = DataContext as MainViewModel;
+            DataService.SaveData(vm.CurrentSettlement); //зберігання при виході
         }
     }
 }
