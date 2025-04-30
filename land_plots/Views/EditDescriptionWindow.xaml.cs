@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LandManagementApp.Models;
+using LandManagementApp.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +21,11 @@ namespace LandManagementApp.Views
     /// </summary>
     public partial class EditDescriptionWindow : Window
     {
-        public EditDescriptionWindow()
+        public EditDescriptionWindow(Description description)
         {
             InitializeComponent();
+            DataContext = new EditDescriptionViewModel(description);
         }
+        public EditDescriptionViewModel ViewModel => (EditDescriptionViewModel)DataContext;
     }
 }

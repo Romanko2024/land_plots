@@ -18,6 +18,7 @@ namespace LandManagementApp.Views
 {
     public partial class EditOwnerWindow : Window
     {
+        public EditOwnerViewModel ViewModel => (EditOwnerViewModel)DataContext;
         public EditOwnerWindow(Owner owner)
         {
             InitializeComponent();
