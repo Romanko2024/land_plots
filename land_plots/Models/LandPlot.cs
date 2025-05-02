@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LandManagementApp.Models
 {
-    public class LandPlot : INotifyPropertyChanged
+    public class LandPlot : INotifyPropertyChanged, IDataErrorInfo
     {
         //поля для властивостей
         private Owner _owner;
@@ -17,7 +17,13 @@ namespace LandManagementApp.Models
         private PurposeType _purpose;
         private decimal _marketValue;
 
-        public LandPlot() { }
+        public LandPlot()
+        {
+            //ініціалізуємо обов'язкові поля за замовчуванням
+            _owner = new Owner();
+            _description = new Description();
+        }
+
         public LandPlot(Owner owner, Description description, PurposeType purpose, decimal marketValue)
         {
             Owner = owner;
@@ -69,8 +75,8 @@ namespace LandManagementApp.Models
             }
         }
 
-        //вартість має бути додатньою
-        [Range(0.01, double.MaxValue, ErrorMessage = "Вартість має бути додатньою")]
+        [Range(typeof(decimal), "0.01", "79228162514264337593543950335",
+            ErrorMessage = "Вартість має бути додатною")]
         public decimal MarketValue
         {
             get => _marketValue;
@@ -78,8 +84,7 @@ namespace LandManagementApp.Models
             {
                 if (value != _marketValue)
                 {
-                    _marketValue = value > 0 ? value
-                        : throw new ArgumentOutOfRangeException(nameof(value));
+                    _marketValue = value;
                     OnPropertyChanged(nameof(MarketValue));
                 }
             }
@@ -87,18 +92,21 @@ namespace LandManagementApp.Models
 
         //метод КОРОТКОГО представлення у вигляді тексту
         public string GetSummary() => $"{Owner.LastName} - {MarketValue:C}";
+
         public LandPlot Clone()
         {
             return new LandPlot(
-                new Owner(this.Owner.FirstName, this.Owner.LastName, this.Owner.BirthDate),
-                new Description(
-                    this.Description.GroundWaterLevel,
-                    new List<Point>(this.Description.Polygon) // Глибока копія списку точок
-                ),
-                this.Purpose,
-                this.MarketValue
+                Owner.Clone(),
+                Description.Clone(),
+                Purpose,
+                MarketValue
             );
         }
+
+        public bool HasErrors =>
+            (Owner?.HasErrors ?? true) ||  // Перевірка на null
+            (Description?.HasErrors ?? true) ||
+            MarketValue <= 0;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -107,5 +115,27 @@ namespace LandManagementApp.Models
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public string this[string columnName]
+        {
+            get
+            {
+                switch (columnName)
+                {
+                    case nameof(Owner):
+                        return Owner?.HasErrors == true ? "Некоректні дані власника" : null;
+
+                    case nameof(Description):
+                        return Description?.HasErrors == true ? "Некоректний опис" : null;
+
+                    case nameof(MarketValue):
+                        return MarketValue <= 0 ? "Вартість має бути додатною" : null;
+
+                    default:
+                        return null;
+                }
+            }
+        }
+        public string Error => null;
     }
 }

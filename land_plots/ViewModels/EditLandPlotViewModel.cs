@@ -24,7 +24,7 @@ namespace LandManagementApp.ViewModels
 
         public EditLandPlotViewModel(LandPlot plot)
         {
-            CurrentPlot = plot;
+            CurrentPlot = plot ?? throw new ArgumentNullException(nameof(plot));
         }
 
         [RelayCommand]
@@ -50,8 +50,29 @@ namespace LandManagementApp.ViewModels
         [RelayCommand]
         private void Save(Window window)
         {
-            window.DialogResult = true;
-            window.Close();
+            //перевірка чи вікно передано коректно
+            if (window == null)
+            {
+                MessageBox.Show("Помилка: не вдалося отримати посилання на вікно.");
+                return;
+            }
+
+            //перевірка валідності даних
+            if (CurrentPlot.HasErrors)
+            {
+                MessageBox.Show("Виправте помилки у введених даних перед збереженням.");
+                return;
+            }
+
+            try
+            {
+                window.DialogResult = true;
+                window.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка при збереженні: {ex.Message}");
+            }
         }
 
         [RelayCommand]

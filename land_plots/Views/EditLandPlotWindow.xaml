@@ -85,7 +85,8 @@
                         HorizontalAlignment="Right" 
                         Margin="0 20">
                 <Button Content="Зберегти" 
-                        Command="{Binding SaveCommand}" 
+                        Command="{Binding SaveCommand}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                         Width="100" 
                         Margin="5"
                         Background="#FF008000"
