@@ -81,7 +81,10 @@ namespace LandManagementApp.Models
                 ? ValidationResult.Success
                 : new ValidationResult("Допустимі роки: 1900-2100");
         }
-
+        public bool HasErrors =>
+            !string.IsNullOrEmpty(this[nameof(FirstName)]) ||
+            !string.IsNullOrEmpty(this[nameof(LastName)]) ||
+            !string.IsNullOrEmpty(this[nameof(BirthDate)]);
         //INotifyPropertyChanged оновлює GUI при зміні властивостей
         protected virtual void OnPropertyChanged(string propertyName)//метод інвокить подію
         {

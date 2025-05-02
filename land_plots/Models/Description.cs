@@ -57,6 +57,15 @@ namespace LandManagementApp.Models
         }
         //реалізац INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
+        public bool HasErrors
+        {
+            get
+            {
+                var validationContext = new ValidationContext(this);
+                var validationResults = new List<ValidationResult>();
+                return !Validator.TryValidateObject(this, validationContext, validationResults, true);
+            }
+        }
         public Description Clone()
         {
             return new Description(GroundWaterLevel, new List<Point>(Polygon));

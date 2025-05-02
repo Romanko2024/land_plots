@@ -16,26 +16,24 @@ namespace LandManagementApp.ViewModels
     // відповідає за логіку взаємодії з формою редагування.
     public partial class EditLandPlotViewModel : ObservableObject
     {
-        public static IEnumerable<PurposeType> PurposeTypes =>
-        Enum.GetValues(typeof(PurposeType)).Cast<PurposeType>();
-        // властивість, що представляє поточну ділянку, яку редагуємо.
-        //[ObservableProperty] автоматично генерує код для сповіщень про зміни властивості.
         [ObservableProperty]
-        private Description _currentDescription;
         private LandPlot _currentPlot;
-        // Конструктор, який ініціалізує ViewModel з переданою ділянкою.
-        //name="plot">Ділянка для редагування (або нова ділянка).
+
+        public static IEnumerable<PurposeType> PurposeTypes =>
+            Enum.GetValues(typeof(PurposeType)).Cast<PurposeType>();
+
         public EditLandPlotViewModel(LandPlot plot)
         {
-            CurrentPlot = plot; //призначаємо ділянку для редагування
+            CurrentPlot = plot;
         }
+
         [RelayCommand]
         private void EditOwner()
         {
             var editWindow = new EditOwnerWindow(CurrentPlot.Owner);
             if (editWindow.ShowDialog() == true)
             {
-                CurrentPlot.Owner = editWindow.ViewModel.CurrentOwner;
+                CurrentPlot.Owner = editWindow.ViewModel.CurrentOwner.Clone();
             }
         }
 
@@ -45,14 +43,22 @@ namespace LandManagementApp.ViewModels
             var editWindow = new EditDescriptionWindow(CurrentPlot.Description);
             if (editWindow.ShowDialog() == true)
             {
-                CurrentPlot.Description = editWindow.ViewModel.CurrentDescription;
+                CurrentPlot.Description = editWindow.ViewModel.CurrentDescription.Clone();
             }
         }
-        //[RelayCommand] автомат створює команду яку можна прив'язати до кнопки в XAML.
+
         [RelayCommand]
         private void Save(Window window)
         {
-            window?.Close(); 
+            window.DialogResult = true;
+            window.Close();
+        }
+
+        [RelayCommand]
+        private void Cancel(Window window)
+        {
+            window.DialogResult = false;
+            window.Close();
         }
     }
 }
