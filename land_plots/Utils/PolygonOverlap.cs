@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 
 namespace LandManagementApp.Utils
@@ -9,14 +10,16 @@ namespace LandManagementApp.Utils
     public static class PolygonOverlap
     {
         // метод перевіря чи перетинаються полігони polygonA і polygonB
-        public static bool Check(List<Point> polygonA, List<Point> polygonB)
+        public static bool Check(IEnumerable<Point> polygonA, IEnumerable<Point> polygonB)
         {
+            var listA = polygonA.ToList();
+            var listB = polygonB.ToList();
             //перевірка на повне включення одного полігону в інший
-            if (IsPolygonInside(polygonA, polygonB) || IsPolygonInside(polygonB, polygonA))
+            if (IsPolygonInside(listA, listB) || IsPolygonInside(listB, listA))
                 return true;
 
             //перевірка за допомогою методу розділяючої осі (SAT)
-            return CheckWithSAT(polygonA, polygonB);
+            return CheckWithSAT(listA, listB);
         }
 
         private static bool CheckWithSAT(List<Point> a, List<Point> b)

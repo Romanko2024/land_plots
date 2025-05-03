@@ -13,7 +13,8 @@
             <DataGrid ItemsSource="{Binding CurrentDescription.Polygon}" 
                       AutoGenerateColumns="False"
                       CanUserAddRows="True"
-                      CanUserDeleteRows="True">
+                      CanUserDeleteRows="True"
+                      AutoGeneratingColumn="DataGrid_AutoGeneratingColumn">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="X" Binding="{Binding X}"/>
                     <DataGridTextColumn Header="Y" Binding="{Binding Y}"/>

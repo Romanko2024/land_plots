@@ -27,5 +27,12 @@ namespace LandManagementApp.Views
             DataContext = new EditDescriptionViewModel(description);
         }
         public EditDescriptionViewModel ViewModel => (EditDescriptionViewModel)DataContext;
+        private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
+        {
+            if (e.PropertyType == typeof(double))
+            {
+                (e.Column as DataGridTextColumn).Binding.StringFormat = "F2";
+            }
+        }
     }
 }

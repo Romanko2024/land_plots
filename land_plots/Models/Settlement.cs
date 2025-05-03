@@ -37,7 +37,11 @@ namespace LandManagementApp.Models
         public void AddLandPlot(LandPlot plot)
         {
             // Перевіряє, чи перетинається нова ділянка з уже наявними
-            if (LandPlots.Any(lp => PolygonOverlap.Check(lp.Description.Polygon, plot.Description.Polygon)))
+            if (LandPlots.Any(lp =>
+                PolygonOverlap.Check(
+                lp.Description.Polygon.ToList(), //конв в List<Point>
+                plot.Description.Polygon.ToList() //конв в List<Point>
+                )))
                 throw new InvalidOperationException("Ділянки перетинаються!");
             LandPlots.Add(plot);
             OnPropertyChanged(nameof(LandPlots));

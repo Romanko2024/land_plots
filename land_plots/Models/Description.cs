@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Windows; //для Point
+using System.Collections.ObjectModel;
 
 namespace LandManagementApp.Models
 {
@@ -10,16 +11,16 @@ namespace LandManagementApp.Models
     {
         //поля для збереження значень рівня води та полігону
         private int _groundWaterLevel;
-        private List<Point> _polygon = new List<Point>();
+        private ObservableCollection<Point> _polygon = new ObservableCollection<Point>();
 
         //для створення об'єкта без ініціалізації
-        public Description() { }
-        public Description(int groundWaterLevel, List<Point> polygon)
+        public Description() { _polygon = new ObservableCollection<Point>(); }
+        public Description(int groundWaterLevel, IEnumerable<Point> polygon)
         {
             GroundWaterLevel = groundWaterLevel;
-            _polygon = polygon ?? new List<Point>();
+            _polygon = new ObservableCollection<Point>(polygon ?? new List<Point>());
         }
-        
+
         //атрибут Range забезпечує перевірку на допустимі значення.
         [Range(0, int.MaxValue, ErrorMessage = "Рівень води не може бути від'ємним")]
         public int GroundWaterLevel
@@ -34,46 +35,38 @@ namespace LandManagementApp.Models
                         : throw new ArgumentOutOfRangeException(nameof(value));
                     //сповіщаємо зміну властивості
                     OnPropertyChanged(nameof(GroundWaterLevel));
+                    OnPropertyChanged(nameof(IsValid)); //+ оновлення валідації
                 }
             }
         }
         //список точок, де кожна точка є об'єктом класу Point
-        public List<Point> Polygon
+        public ObservableCollection<Point> Polygon
         {
             get => _polygon;
             set
             {
                 //чи кількість точок більше або дорівнює 3
-                if (value?.Count >= 3)
+                if (value?.Count >= 3 || value == null)
                 {
-                    _polygon = value;
+                    _polygon = value ?? new ObservableCollection<Point>();
                     OnPropertyChanged(nameof(Polygon));
+                    OnPropertyChanged(nameof(IsValid)); // + оновлення валідації
                 }
-                //else
-                //{
-                //    throw new ArgumentException("Полігон має містити ≥3 точок.");
-                //}
             }
         }
         //реалізац INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
-        public bool HasErrors
-        {
-            get
-            {
-                var validationContext = new ValidationContext(this);
-                var validationResults = new List<ValidationResult>();
-                return !Validator.TryValidateObject(this, validationContext, validationResults, true);
-            }
-        }
+        public bool HasErrors => !IsValid;
         public Description Clone()
         {
-            return new Description(
-                GroundWaterLevel,
-                _polygon != null ? new List<Point>(_polygon) : new List<Point>()
-            );
+            return new Description
+            {
+                GroundWaterLevel = this.GroundWaterLevel,
+                Polygon = new ObservableCollection<Point>(this.Polygon ?? new ObservableCollection<Point>())
+            };
         }
         public bool IsValid =>
+            _polygon != null &&
             _polygon.Count >= 3 &&
             GroundWaterLevel >= 0;
         // сповіщення про зміни властивостей класу

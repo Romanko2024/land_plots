@@ -59,7 +59,7 @@ namespace LandManagementApp.Utils
                 Description = new DescriptionDTO
                 {
                     GroundWaterLevel = plot.Description.GroundWaterLevel,
-                    Polygon = plot.Description.Polygon
+                    Polygon = plot.Description.Polygon.ToList()
                 },
                 Purpose = plot.Purpose,
                 MarketValue = plot.MarketValue

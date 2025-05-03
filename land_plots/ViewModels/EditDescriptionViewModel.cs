@@ -17,7 +17,7 @@ namespace LandManagementApp.ViewModels
 
         public EditDescriptionViewModel(Description description)
         {
-            CurrentDescription = description.Clone();
+            CurrentDescription = description?.Clone() ?? new Description();
         }
         [RelayCommand]
         private void AddPoint()
@@ -28,6 +28,11 @@ namespace LandManagementApp.ViewModels
         [RelayCommand]
         private void Save(Window window)
         {
+            if (CurrentDescription == null)
+            {
+                MessageBox.Show("Помилка: опис не ініціалізовано!");
+                return;
+            }
             if (!CurrentDescription.IsValid)
             {
                 MessageBox.Show("Додайте щонайменше 3 точки для полігону!");
