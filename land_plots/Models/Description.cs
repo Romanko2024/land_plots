@@ -10,14 +10,14 @@ namespace LandManagementApp.Models
     {
         //поля для збереження значень рівня води та полігону
         private int _groundWaterLevel;
-        private List<Point> _polygon;
+        private List<Point> _polygon = new List<Point>();
 
         //для створення об'єкта без ініціалізації
         public Description() { }
         public Description(int groundWaterLevel, List<Point> polygon)
         {
             GroundWaterLevel = groundWaterLevel;
-            Polygon = polygon;
+            _polygon = polygon ?? new List<Point>();
         }
         
         //атрибут Range забезпечує перевірку на допустимі значення.
@@ -49,10 +49,10 @@ namespace LandManagementApp.Models
                     _polygon = value;
                     OnPropertyChanged(nameof(Polygon));
                 }
-                else
-                {
-                    throw new ArgumentException("Полігон має містити ≥3 точок.");
-                }
+                //else
+                //{
+                //    throw new ArgumentException("Полігон має містити ≥3 точок.");
+                //}
             }
         }
         //реалізац INotifyPropertyChanged
@@ -68,8 +68,14 @@ namespace LandManagementApp.Models
         }
         public Description Clone()
         {
-            return new Description(GroundWaterLevel, new List<Point>(Polygon));
+            return new Description(
+                GroundWaterLevel,
+                _polygon != null ? new List<Point>(_polygon) : new List<Point>()
+            );
         }
+        public bool IsValid =>
+            _polygon.Count >= 3 &&
+            GroundWaterLevel >= 0;
         // сповіщення про зміни властивостей класу
         protected virtual void OnPropertyChanged(string propertyName)
         {

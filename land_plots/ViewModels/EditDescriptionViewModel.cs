@@ -23,26 +23,19 @@ namespace LandManagementApp.ViewModels
         private void AddPoint()
         {
             CurrentDescription.Polygon.Add(new Point(0, 0));
-            OnPropertyChanged(nameof(CurrentDescription.Polygon));
+            OnPropertyChanged(nameof(CurrentDescription.IsValid));
         }
         [RelayCommand]
         private void Save(Window window)
         {
-            try
+            if (!CurrentDescription.IsValid)
             {
-                //виклик сеттера Polygon для валідації
-                CurrentDescription.Polygon = new List<Point>(CurrentDescription.Polygon);
-
-                if (CurrentDescription.HasErrors)
-                    throw new ArgumentException("Некоректні дані");
-
-                window.DialogResult = true;
-                window.Close();
+                MessageBox.Show("Додайте щонайменше 3 точки для полігону!");
+                return;
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+
+            window.DialogResult = true;
+            window.Close();
         }
 
         [RelayCommand]

@@ -23,7 +23,7 @@
             <Button Content="Додати точку" Command="{Binding AddPointCommand}" Margin="0 5"/>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 20">
-                <Button Content="Зберегти" Command="{Binding SaveCommand}" 
+                <Button Content="Зберегти" Command="{Binding SaveCommand}" IsEnabled="{Binding CurrentDescription.IsValid}"
                         Width="100" Margin="5" Background="#FF008000"/>
                 <Button Content="Скасувати" Command="{Binding CancelCommand}" 
                         Width="100" Margin="5" Background="#FFFF0000"/>

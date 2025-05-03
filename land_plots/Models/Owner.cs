@@ -95,7 +95,10 @@ namespace LandManagementApp.Models
                             : null;
 
                     case nameof(BirthDate):
-                        return ValidateBirthDate(BirthDate).ErrorMessage;
+                        var validationResult = ValidateBirthDate(BirthDate);
+                        return validationResult != ValidationResult.Success
+                            ? validationResult.ErrorMessage
+                            : null;
 
                     default:
                         return null;

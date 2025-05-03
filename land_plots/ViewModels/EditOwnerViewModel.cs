@@ -17,19 +17,42 @@ namespace LandManagementApp.ViewModels
 
         public EditOwnerViewModel(Owner owner)
         {
-            CurrentOwner = owner.Clone(); //клонування для безпечного редагування
+            CurrentOwner = owner ?? new Owner(); //клонування для безпечного редагування
         }
 
         [RelayCommand]
         private void Save(Window window)
         {
-            if (CurrentOwner.HasErrors) //перевірка валідації
+            // перевірка чи передано коректне посилання на вікно
+            if (window == null)
             {
-                MessageBox.Show("Виправте помилки введення.");
+                MessageBox.Show("Помилка: вікно не знайдено.");
                 return;
             }
-            window.DialogResult = true;
-            window.Close();
+
+            //чи ініціалізовано CurrentOwner
+            if (CurrentOwner == null)
+            {
+                MessageBox.Show("Помилка: дані власника відсутні.");
+                return;
+            }
+
+            //валідація даних
+            if (CurrentOwner.HasErrors)
+            {
+                MessageBox.Show("Виправте помилки перед збереженням.");
+                return;
+            }
+
+            try
+            {
+                window.DialogResult = true;
+                window.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка збереження: {ex.Message}");
+            }
         }
 
         [RelayCommand]
