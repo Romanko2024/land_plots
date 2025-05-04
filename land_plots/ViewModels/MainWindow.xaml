@@ -28,10 +28,17 @@
             </Grid.ColumnDefinitions>
 
             <!-- список ділянок -->
-            <ListBox ItemsSource="{Binding LandPlots}" SelectedItem="{Binding SelectedPlot}">
+            <ListBox ItemsSource="{Binding LandPlots}" 
+                SelectedItem="{Binding SelectedPlot}"
+                Background="White"
+                Foreground="Black">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding GetSummary}"/>
+                        <TextBlock Text="{Binding Summary}" 
+                       Foreground="Black"
+                       Margin="5,2"
+                       Padding="5"
+                       FontSize="14"/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>

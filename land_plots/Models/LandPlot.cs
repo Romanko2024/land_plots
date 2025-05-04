@@ -22,8 +22,17 @@ namespace LandManagementApp.Models
             //ініціалізуємо обов'язкові поля за замовчуванням
             _owner = new Owner();
             _description = new Description();
+            //підписуємось на зміни в Owner
+            _owner.PropertyChanged += Owner_PropertyChanged;
         }
-
+        //обробник змін у властивостях Owner
+        private void Owner_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Owner.LastName))
+            {
+                OnPropertyChanged(nameof(Summary));
+            }
+        }
         public LandPlot(Owner owner, Description description, PurposeType purpose, decimal marketValue)
         {
             Owner = owner;
@@ -40,9 +49,14 @@ namespace LandManagementApp.Models
             {
                 if (_owner != value)
                 {
+                    if (_owner != null)
+                        _owner.PropertyChanged -= Owner_PropertyChanged;
                     //якщо передано null — кидаємо виняток
                     _owner = value ?? throw new ArgumentNullException(nameof(value));
+                    _owner.PropertyChanged += Owner_PropertyChanged;
+
                     OnPropertyChanged(nameof(Owner));
+                    OnPropertyChanged(nameof(Summary));
                 }
             }
         }
@@ -86,12 +100,13 @@ namespace LandManagementApp.Models
                 {
                     _marketValue = value;
                     OnPropertyChanged(nameof(MarketValue));
+                    OnPropertyChanged(nameof(Summary));
                 }
             }
         }
 
         //метод КОРОТКОГО представлення у вигляді тексту
-        public string GetSummary() => $"{Owner.LastName} - {MarketValue:C}";
+        public string Summary => $"{Owner.LastName} - {MarketValue:C}";
 
         public LandPlot Clone()
         {
