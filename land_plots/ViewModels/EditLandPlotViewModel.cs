@@ -50,11 +50,21 @@ namespace LandManagementApp.ViewModels
         private void Save(Window window)
         {
             //перевірка валідності даних
-            if (CurrentPlot.HasErrors)
+            var errors = new List<string>();
+
+            if (CurrentPlot.Owner?.HasErrors ?? true)
+                errors.Add("Помилки у власнику");
+            if (CurrentPlot.Description?.HasErrors ?? true)
+                errors.Add("Помилки у описі");
+            if (CurrentPlot.MarketValue <= 0)
+                errors.Add("Некоректна вартість");
+
+            if (errors.Any())
             {
-                MessageBox.Show("Виправте помилки у введених даних перед збереженням.");
+                MessageBox.Show($"Знайдено помилки:\n{string.Join("\n", errors)}");
                 return;
             }
+
             window.DialogResult = true;
             window.Close();
         }
