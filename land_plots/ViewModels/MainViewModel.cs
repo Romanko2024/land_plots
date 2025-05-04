@@ -26,11 +26,12 @@ namespace LandManagementApp.ViewModels
 
         //поточний населений пункт із завантаженими даними
         [ObservableProperty]
-        private Settlement _currentSettlement = DataService.LoadData();
+        private Settlement _currentSettlement;
 
         public MainViewModel()
         {
-            
+            _currentSettlement = DataService.LoadData();
+            LandPlots = new ObservableCollection<LandPlot>(_currentSettlement.LandPlots);
         }
 
         // команда для додавання нової земельної ділянки

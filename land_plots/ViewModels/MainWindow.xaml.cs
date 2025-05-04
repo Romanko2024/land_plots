@@ -42,6 +42,9 @@ namespace LandManagementApp.ViewModels
                 case MessageBoxResult.Yes:
                     DataService.SaveData(viewModel.CurrentSettlement);
                     break;
+                case MessageBoxResult.No:
+                    //не зберігаємо зміни
+                    break;
                 case MessageBoxResult.Cancel:
                     e.Cancel = true;
                     break;

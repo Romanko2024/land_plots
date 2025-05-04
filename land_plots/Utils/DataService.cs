@@ -16,25 +16,45 @@ namespace LandManagementApp.Utils
         private static JsonSerializerSettings _settings = new JsonSerializerSettings
         {
             Converters = { new PointConverter() },
-            Formatting = Formatting.Indented
+            Formatting = Formatting.Indented,
+            PreserveReferencesHandling = PreserveReferencesHandling.Objects //для коректної серіалізації колекцій
         };
 
         public static void SaveData(Settlement settlement)
         {
             // Конвертація Settlement -> SettlementDTO
-            var dto = ConvertToSettlementDTO(settlement);
-            var json = JsonConvert.SerializeObject(dto, _settings);
-            File.WriteAllText(FilePath, json);
+            try
+            {
+                var dto = ConvertToSettlementDTO(settlement);
+                var json = JsonConvert.SerializeObject(dto, _settings);
+                File.WriteAllText(FilePath, json);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка збереження: {ex.Message}");
+            }
         }
 
         public static Settlement LoadData()
         {
-            if (!File.Exists(FilePath)) return new Settlement();
+            try
+            {
+                if (!File.Exists(FilePath)) return new Settlement();
 
-            var json = File.ReadAllText(FilePath);
-            var dto = JsonConvert.DeserializeObject<SettlementDTO>(json, _settings);
-            // Конвертація SettlementDTO -> Settlement
-            return ConvertFromSettlementDTO(dto);
+                var json = File.ReadAllText(FilePath);
+                var dto = JsonConvert.DeserializeObject<SettlementDTO>(json, _settings);
+                var settlement = ConvertFromSettlementDTO(dto);
+
+                // Оновлюємо статичний лічильник
+                Settlement.ResetCounter(settlement.SerialNumber);
+
+                return settlement;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка завантаження: {ex.Message}");
+                return new Settlement();
+            }
         }
 
         private static SettlementDTO ConvertToSettlementDTO(Settlement settlement)

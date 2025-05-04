@@ -10,7 +10,10 @@ namespace LandManagementApp.Models
     public class Settlement : INotifyPropertyChanged
     {
         private static int _totalCount;
-
+        public static void ResetCounter(int startValue = 0)
+        {
+            _totalCount = startValue;
+        }
         //поле для зберігання земельних ділянок (використовуємо ObservableCollection)
         private ObservableCollection<LandPlot> _landPlots = new ObservableCollection<LandPlot>();
 
