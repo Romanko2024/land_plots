@@ -19,60 +19,44 @@ namespace LandManagementApp.ViewModels
         [ObservableProperty]
         private LandPlot _currentPlot;
 
-        public static IEnumerable<PurposeType> PurposeTypes =>
-            Enum.GetValues(typeof(PurposeType)).Cast<PurposeType>();
+        public Array PurposeTypes => Enum.GetValues(typeof(PurposeType));
 
         public EditLandPlotViewModel(LandPlot plot)
         {
-            CurrentPlot = plot ?? throw new ArgumentNullException(nameof(plot));
+            _currentPlot = plot ?? new LandPlot();
         }
 
         [RelayCommand]
         private void EditOwner()
         {
-            var editWindow = new EditOwnerWindow(CurrentPlot.Owner);
+            var editWindow = new Views.EditOwnerWindow(CurrentPlot.Owner);
             if (editWindow.ShowDialog() == true)
             {
-                CurrentPlot.Owner = editWindow.ViewModel.CurrentOwner.Clone();
+                OnPropertyChanged(nameof(CurrentPlot));
             }
         }
 
         [RelayCommand]
         private void EditDescription()
         {
-            var editWindow = new EditDescriptionWindow(CurrentPlot.Description);
+            var editWindow = new Views.EditDescriptionWindow(CurrentPlot.Description);
             if (editWindow.ShowDialog() == true)
             {
-                CurrentPlot.Description = editWindow.ViewModel.CurrentDescription.Clone();
+                OnPropertyChanged(nameof(CurrentPlot));
             }
         }
 
         [RelayCommand]
         private void Save(Window window)
         {
-            //перевірка чи вікно передано коректно
-            if (window == null)
-            {
-                MessageBox.Show("Помилка: не вдалося отримати посилання на вікно.");
-                return;
-            }
-
             //перевірка валідності даних
             if (CurrentPlot.HasErrors)
             {
                 MessageBox.Show("Виправте помилки у введених даних перед збереженням.");
                 return;
             }
-
-            try
-            {
-                window.DialogResult = true;
-                window.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Помилка при збереженні: {ex.Message}");
-            }
+            window.DialogResult = true;
+            window.Close();
         }
 
         [RelayCommand]
