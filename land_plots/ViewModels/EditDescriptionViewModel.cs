@@ -22,7 +22,7 @@ namespace LandManagementApp.ViewModels
         [RelayCommand]
         private void AddPoint()
         {
-            CurrentDescription.Polygon.Add(new Point(10, 20));
+            CurrentDescription.Polygon.Add(new ObservablePoint { X = 0, Y = 0 });
             OnPropertyChanged(nameof(CurrentDescription.IsValid));
         }
         [RelayCommand]

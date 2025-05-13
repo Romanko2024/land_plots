@@ -79,7 +79,7 @@ namespace LandManagementApp.Utils
                 Description = new DescriptionDTO
                 {
                     GroundWaterLevel = plot.Description.GroundWaterLevel,
-                    Polygon = plot.Description.Polygon.ToList()
+                    Polygon = plot.Description.Polygon.Select(op => op.ToPoint()).ToList()
                 },
                 Purpose = plot.Purpose,
                 MarketValue = plot.MarketValue
@@ -102,25 +102,41 @@ namespace LandManagementApp.Utils
             var description = new Description(dto.Description.GroundWaterLevel, dto.Description.Polygon);
             return new LandPlot(owner, description, dto.Purpose, dto.MarketValue);
         }
+        private static DescriptionDTO ConvertToDescriptionDTO(Description description)
+        {
+            return new DescriptionDTO
+            {
+                GroundWaterLevel = description.GroundWaterLevel,
+                Polygon = description.Polygon.Select(op => op.ToPoint()).ToList()
+            };
+        }
+
+        private static Description ConvertFromDescriptionDTO(DescriptionDTO dto)
+        {
+            return new Description(
+                dto.GroundWaterLevel,
+                dto.Polygon
+            );
+        }
     }
 
-    public class PointConverter : JsonConverter<Point>
+    public class PointConverter : JsonConverter<ObservablePoint>
     {
-        public override Point ReadJson(JsonReader reader, Type objectType, Point existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override ObservablePoint ReadJson(JsonReader reader, Type objectType, ObservablePoint existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             var str = reader.Value?.ToString();
-            if (string.IsNullOrEmpty(str)) return new Point(0, 0);
+            if (string.IsNullOrEmpty(str)) return new ObservablePoint { X = 0, Y = 0 };
 
             var parts = str.Split(';');
             if (parts.Length != 2 ||
                 !double.TryParse(parts[0], out double x) ||
                 !double.TryParse(parts[1], out double y))
-                return new Point(0, 0);
-            //
-            return new Point(x, y);
+                return new ObservablePoint { X = 0, Y = 0 };
+
+            return new ObservablePoint { X = x, Y = y };
         }
 
-        public override void WriteJson(JsonWriter writer, Point value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, ObservablePoint value, JsonSerializer serializer)
         {
             writer.WriteValue($"{value.X};{value.Y}");
         }

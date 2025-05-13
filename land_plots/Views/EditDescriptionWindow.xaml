@@ -11,13 +11,15 @@
 
             <TextBlock Text="Координати полігону:" FontWeight="Bold"/>
             <DataGrid ItemsSource="{Binding CurrentDescription.Polygon}" 
-                      AutoGenerateColumns="False"
-                      CanUserAddRows="True"
-                      CanUserDeleteRows="True"
-                      AutoGeneratingColumn="DataGrid_AutoGeneratingColumn">
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="True"
+                    CanUserDeleteRows="True"
+                    AutoGeneratingColumn="DataGrid_AutoGeneratingColumn">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="X" Binding="{Binding X}"/>
-                    <DataGridTextColumn Header="Y" Binding="{Binding Y}"/>
+                    <DataGridTextColumn Header="X" 
+                    Binding="{Binding X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=F2}"/>
+                    <DataGridTextColumn Header="Y" 
+                    Binding="{Binding Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=F2}"/>
                 </DataGrid.Columns>
             </DataGrid>
 

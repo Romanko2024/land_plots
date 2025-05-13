@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LandManagementApp.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -10,10 +11,10 @@ namespace LandManagementApp.Utils
     public static class PolygonOverlap
     {
         // метод перевіря чи перетинаються полігони polygonA і polygonB
-        public static bool Check(IEnumerable<Point> polygonA, IEnumerable<Point> polygonB)
+        public static bool Check(IEnumerable<ObservablePoint> polygonA, IEnumerable<ObservablePoint> polygonB)
         {
-            var listA = polygonA.ToList();
-            var listB = polygonB.ToList();
+            var listA = polygonA.Select(p => p.ToPoint()).ToList();
+            var listB = polygonB.Select(p => p.ToPoint()).ToList();
             //перевірка на повне включення одного полігону в інший
             if (IsPolygonInside(listA, listB) || IsPolygonInside(listB, listA))
                 return true;
@@ -49,12 +50,7 @@ namespace LandManagementApp.Utils
 
         private static bool IsPolygonInside(List<Point> polyA, List<Point> polyB)
         {
-            foreach (var point in polyA)
-            {
-                if (!IsPointInsidePolygon(point, polyB))
-                    return false;
-            }
-            return true;
+            return polyA.All(p => IsPointInsidePolygon(p, polyB));
         }
 
         private static bool IsPointInsidePolygon(Point p, List<Point> polygon)
@@ -64,9 +60,7 @@ namespace LandManagementApp.Utils
             {
                 Point a = polygon[i];
                 Point b = polygon[(i + 1) % polygon.Count];
-
-                if (RayCrossesSegment(p, a, b))
-                    intersections++;
+                if (RayCrossesSegment(p, a, b)) intersections++;
             }
             return (intersections % 2) == 1;
         }

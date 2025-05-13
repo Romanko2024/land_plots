@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Windows; //для Point
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows.Media;
 
 namespace LandManagementApp.Models
 {
@@ -11,14 +13,21 @@ namespace LandManagementApp.Models
     {
         //поля для збереження значень рівня води та полігону
         private int _groundWaterLevel;
-        private ObservableCollection<Point> _polygon = new ObservableCollection<Point>();
+        private ObservableCollection<ObservablePoint> _polygon = new ObservableCollection<ObservablePoint>();
+        public PointCollection PolygonAsPoints =>
+    new PointCollection(Polygon.Select(p => new Point(p.X, p.Y)));
 
         //для створення об'єкта без ініціалізації
-        public Description() { _polygon = new ObservableCollection<Point>(); }
+        public Description()
+        {
+            _polygon = new ObservableCollection<ObservablePoint>();
+        }
+
         public Description(int groundWaterLevel, IEnumerable<Point> polygon)
         {
             GroundWaterLevel = groundWaterLevel;
-            _polygon = new ObservableCollection<Point>(polygon ?? new List<Point>());
+            _polygon = new ObservableCollection<ObservablePoint>(
+                polygon?.Select(p => ObservablePoint.FromPoint(p)) ?? new List<ObservablePoint>());
         }
 
         //атрибут Range забезпечує перевірку на допустимі значення.
@@ -40,7 +49,7 @@ namespace LandManagementApp.Models
             }
         }
         //список точок, де кожна точка є об'єктом класу Point
-        public ObservableCollection<Point> Polygon
+        public ObservableCollection<ObservablePoint> Polygon
         {
             get => _polygon;
             set
@@ -48,7 +57,7 @@ namespace LandManagementApp.Models
                 //чи кількість точок більше або дорівнює 3
                 if (value?.Count >= 3 || value == null)
                 {
-                    _polygon = value ?? new ObservableCollection<Point>();
+                    _polygon = value ?? new ObservableCollection<ObservablePoint>();
                     OnPropertyChanged(nameof(Polygon));
                     OnPropertyChanged(nameof(IsValid)); // + оновлення валідації
                 }
@@ -56,13 +65,16 @@ namespace LandManagementApp.Models
         }
         //реалізац INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
+
         public bool HasErrors => !IsValid;
+
         public Description Clone()
         {
             return new Description
             {
                 GroundWaterLevel = this.GroundWaterLevel,
-                Polygon = new ObservableCollection<Point>(this.Polygon ?? new ObservableCollection<Point>())
+                Polygon = new ObservableCollection<ObservablePoint>(
+                    this.Polygon.Select(p => new ObservablePoint { X = p.X, Y = p.Y }))
             };
         }
         public bool IsValid =>
