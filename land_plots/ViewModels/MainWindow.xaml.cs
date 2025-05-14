@@ -40,7 +40,7 @@ namespace LandManagementApp.ViewModels
             switch (result)
             {
                 case MessageBoxResult.Yes:
-                    DataService.SaveData(viewModel.CurrentSettlement);
+                    DataService.SaveSettlements(viewModel.Settlements.ToList());
                     break;
                 case MessageBoxResult.No:
                     //не зберігаємо зміни

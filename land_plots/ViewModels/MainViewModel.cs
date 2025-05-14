@@ -13,52 +13,66 @@ using LandManagementApp.Views;
 
 namespace LandManagementApp.ViewModels
 {
-    // ViewModel головного вікна яка працює з земельними ділянками та їх збереженням
     public partial class MainViewModel : ObservableObject
     {
-        // колекція ділянок для відображення в інтерфейсі (ObservableCollection автоматично оновлює GUI при змінах)
         [ObservableProperty]
-        private ObservableCollection<LandPlot> _landPlots = new();
+        private ObservableCollection<Settlement> _settlements = new();
 
-        //поточна вибрана ділянка
         [ObservableProperty]
-        private LandPlot _selectedPlot;
+        private Settlement? _selectedSettlement;
 
-        //поточний населений пункт із завантаженими даними
         [ObservableProperty]
-        private Settlement _currentSettlement;
+        private LandPlot? _selectedPlot;
+
+        public ObservableCollection<LandPlot> CurrentLandPlots =>
+            new ObservableCollection<LandPlot>(_selectedSettlement?.LandPlots ?? new List<LandPlot>());
 
         public MainViewModel()
         {
-            _currentSettlement = DataService.LoadData();
-            LandPlots = new ObservableCollection<LandPlot>(_currentSettlement.LandPlots);
+            // Завантаження всіх населених пунктів
+            var loadedData = DataService.LoadSettlements();
+            if (loadedData != null)
+            {
+                _settlements = new ObservableCollection<Settlement>(loadedData);
+                if (_settlements.Any())
+                    SelectedSettlement = _settlements.First();
+            }
         }
 
-        // команда для додавання нової земельної ділянки
+        [RelayCommand]
+        private void AddSettlement()
+        {
+            var newSettlement = new Settlement();
+            _settlements.Add(newSettlement);
+            SelectedSettlement = newSettlement;
+        }
+
         [RelayCommand]
         private void AddPlot()
         {
-            // створюємо нову порожню ділянку
+            if (SelectedSettlement == null)
+            {
+                MessageBox.Show("Оберіть населений пункт!");
+                return;
+            }
+
             var newPlot = new LandPlot();
-            // відкриваємо вікно редагування ділянки
-            var editWindow = new LandManagementApp.Views.EditLandPlotWindow(newPlot);
-            // якщо користувач натиснув "ОК" (підтвердив введення)
+            var editWindow = new EditLandPlotWindow(newPlot);
+
             if (editWindow.ShowDialog() == true)
             {
                 try
                 {
-                    // додаємо ділянку в поточний населений пункт
-                    _currentSettlement.AddLandPlot(newPlot);
-                    //додаємо ділянку в колекцію для відображення в GUI
-                    LandPlots.Add(newPlot);
+                    SelectedSettlement.AddLandPlot(newPlot);
+                    OnPropertyChanged(nameof(CurrentLandPlots));
                 }
                 catch (Exception ex)
                 {
-                    // якщо помилка (напр перетин полігонів)
                     MessageBox.Show(ex.Message);
                 }
             }
         }
+
         [RelayCommand(CanExecute = nameof(CanEditPlot))]
         private void EditPlot()
         {
@@ -71,15 +85,9 @@ namespace LandManagementApp.ViewModels
 
                 if (editWindow.ShowDialog() == true)
                 {
-                    // Видаляємо стару версію
-                    _currentSettlement.LandPlots.Remove(SelectedPlot);
-                    LandPlots.Remove(SelectedPlot);
-
-                    // Додаємо оновлену версію
-                    _currentSettlement.AddLandPlot(clone);
-                    LandPlots.Add(clone);
-
-                    SelectedPlot = clone;
+                    SelectedSettlement!.LandPlots.Remove(SelectedPlot);
+                    SelectedSettlement.AddLandPlot(clone);
+                    OnPropertyChanged(nameof(CurrentLandPlots));
                 }
             }
             catch (Exception ex)
@@ -88,15 +96,13 @@ namespace LandManagementApp.ViewModels
             }
         }
 
-        private bool CanEditPlot() => SelectedPlot != null;
-        // команда для збереження даних і закриття додатку
         [RelayCommand]
         private void SaveAndExit()
         {
-            // зберігаємо поточний стан н.п. в файл
-            DataService.SaveData(_currentSettlement);
-            // закриваємо додаток
+            DataService.SaveSettlements(_settlements.ToList());
             Application.Current.Shutdown();
         }
+
+        private bool CanEditPlot() => SelectedPlot != null;
     }
 }

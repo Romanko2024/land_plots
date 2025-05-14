@@ -12,41 +12,65 @@
     </Window.Resources>
 
     <DockPanel>
+        <!-- Верхня панель з керуванням населеними пунктами -->
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="5">
-            <Button Content="Додати" Command="{Binding AddPlotCommand}" Margin="5"/>
-            <Button Content="Редагувати" 
-            Command="{Binding EditPlotCommand}" 
-            IsEnabled="{Binding SelectedPlot, Converter={StaticResource NullToFalseConverter}}"
-            Margin="5"/>
-            <Button Content="Зберегти та вийти" Command="{Binding SaveAndExitCommand}" Margin="5"/>
+            <!-- Кнопка додавання населеного пункту -->
+            <Button Content="+ Населений пункт" 
+                    Command="{Binding AddSettlementCommand}" 
+                    Margin="5" 
+                    Width="120"/>
+
+            <!-- Випадаючий список населених пунктів -->
+            <ComboBox ItemsSource="{Binding Settlements}"
+                      SelectedItem="{Binding SelectedSettlement}"
+                      DisplayMemberPath="SerialNumber"
+                      Width="150"
+                      Margin="5"/>
         </StackPanel>
 
+        <!-- Панель керування ділянками -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="5">
+            <Button Content="+ Додати ділянку" 
+                    Command="{Binding AddPlotCommand}" 
+                    Margin="5"/>
+            <Button Content="✎ Редагувати" 
+                    Command="{Binding EditPlotCommand}" 
+                    IsEnabled="{Binding SelectedPlot, Converter={StaticResource NullToFalseConverter}}"
+                    Margin="5"/>
+            <Button Content="💾 Зберегти та вийти" 
+                    Command="{Binding SaveAndExitCommand}" 
+                    Margin="5"/>
+        </StackPanel>
+
+        <!-- Основна область -->
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- список ділянок -->
-            <ListBox ItemsSource="{Binding LandPlots}" 
-                SelectedItem="{Binding SelectedPlot}"
-                Background="White"
-                Foreground="Black">
+            <!-- Список ділянок обраного населеного пункту -->
+            <ListBox Grid.Column="0"
+                     ItemsSource="{Binding CurrentLandPlots}" 
+                     SelectedItem="{Binding SelectedPlot}"
+                     Background="White"
+                     Foreground="Black">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding Summary}" 
-                       Foreground="Black"
-                       Margin="5,2"
-                       Padding="5"
-                       FontSize="14"/>
+                        <StackPanel Margin="5">
+                            <TextBlock Text="{Binding Summary}" 
+                                       FontSize="14"/>
+                            <TextBlock Text="{Binding Description.GroundWaterLevel, StringFormat='Рівень води: {0}'}"
+                                       Foreground="Gray"/>
+                        </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
 
-            <!-- візуалізація полігонів -->
-            <Canvas Grid.Column="1">
-                <Viewbox Stretch="Uniform" Width="Auto" Height="Auto">
-                    <ItemsControl ItemsSource="{Binding LandPlots}">
+            <!-- Візуалізація полігонів -->
+            <Canvas Grid.Column="1" Background="#FFF0F0F0">
+                <Viewbox Stretch="Uniform">
+                    <ItemsControl ItemsSource="{Binding CurrentLandPlots}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <Canvas/>
@@ -54,10 +78,10 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Polygon Points="{Binding Description.PolygonAsPoints}" 
-                                    Stroke="Black"
-                                    Fill="#60FF0000"
-                                    StrokeThickness="1"/>
+                                <Polygon Points="{Binding Description.PolygonAsPoints}"
+                                         Stroke="DarkBlue"
+                                         Fill="#60008FFF"
+                                         StrokeThickness="1.5"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

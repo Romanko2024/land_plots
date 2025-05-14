@@ -20,13 +20,13 @@ namespace LandManagementApp.Utils
             PreserveReferencesHandling = PreserveReferencesHandling.Objects //для коректної серіалізації колекцій
         };
 
-        public static void SaveData(Settlement settlement)
+        public static void SaveSettlements(List<Settlement> settlements)
         {
             // Конвертація Settlement -> SettlementDTO
             try
             {
-                var dto = ConvertToSettlementDTO(settlement);
-                var json = JsonConvert.SerializeObject(dto, _settings);
+                var dtos = settlements.Select(ConvertToSettlementDTO).ToList();
+                var json = JsonConvert.SerializeObject(dtos, _settings);
                 File.WriteAllText(FilePath, json);
             }
             catch (Exception ex)
@@ -35,27 +35,33 @@ namespace LandManagementApp.Utils
             }
         }
 
-        public static Settlement LoadData()
+        //завантаження всіх населених пунктів
+        public static List<Settlement> LoadSettlements()
         {
             try
             {
-                if (!File.Exists(FilePath)) return new Settlement();
+                if (!File.Exists(FilePath)) return new List<Settlement>();
 
                 var json = File.ReadAllText(FilePath);
-                var dto = JsonConvert.DeserializeObject<SettlementDTO>(json, _settings);
-                var settlement = ConvertFromSettlementDTO(dto);
+                var dtos = JsonConvert.DeserializeObject<List<SettlementDTO>>(json, _settings);
 
-                // Оновлюємо статичний лічильник
-                Settlement.ResetCounter(settlement.SerialNumber);
+                //оновлення лічильника
+                if (dtos.Any())
+                {
+                    var maxSerial = dtos.Max(s => s.SerialNumber);
+                    Settlement.ResetCounter(maxSerial);
+                }
 
-                return settlement;
+                return dtos.Select(ConvertFromSettlementDTO).ToList();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Помилка завантаження: {ex.Message}");
-                return new Settlement();
+                return new List<Settlement>();
             }
         }
+
+        //конверт моделей <-> DTO
 
         private static SettlementDTO ConvertToSettlementDTO(Settlement settlement)
         {
@@ -64,6 +70,16 @@ namespace LandManagementApp.Utils
                 SerialNumber = settlement.SerialNumber,
                 LandPlots = settlement.LandPlots.Select(ConvertToLandPlotDTO).ToList()
             };
+        }
+
+        private static Settlement ConvertFromSettlementDTO(SettlementDTO dto)
+        {
+            var settlement = new Settlement();
+            foreach (var plotDto in dto.LandPlots)
+            {
+                settlement.AddLandPlot(ConvertFromLandPlotDTO(plotDto));
+            }
+            return settlement;
         }
 
         private static LandPlotDTO ConvertToLandPlotDTO(LandPlot plot)
@@ -86,59 +102,46 @@ namespace LandManagementApp.Utils
             };
         }
 
-        private static Settlement ConvertFromSettlementDTO(SettlementDTO dto)
-        {
-            var settlement = new Settlement();
-            foreach (var plotDto in dto.LandPlots)
-            {
-                settlement.AddLandPlot(ConvertFromLandPlotDTO(plotDto));
-            }
-            return settlement;
-        }
-
         private static LandPlot ConvertFromLandPlotDTO(LandPlotDTO dto)
         {
             var owner = new Owner(dto.Owner.FirstName, dto.Owner.LastName, dto.Owner.BirthDate);
-            var description = new Description(dto.Description.GroundWaterLevel, dto.Description.Polygon);
+            var description = new Description(
+                dto.Description.GroundWaterLevel,
+                dto.Description.Polygon
+            );
             return new LandPlot(owner, description, dto.Purpose, dto.MarketValue);
         }
-        private static DescriptionDTO ConvertToDescriptionDTO(Description description)
+
+        //
+
+        public class PointConverter : JsonConverter<ObservablePoint>
         {
-            return new DescriptionDTO
+            public override ObservablePoint ReadJson(
+                JsonReader reader,
+                Type objectType,
+                ObservablePoint existingValue,
+                bool hasExistingValue,
+                JsonSerializer serializer)
             {
-                GroundWaterLevel = description.GroundWaterLevel,
-                Polygon = description.Polygon.Select(op => op.ToPoint()).ToList()
-            };
-        }
+                var str = reader.Value?.ToString();
+                if (string.IsNullOrEmpty(str)) return new ObservablePoint { X = 0, Y = 0 };
 
-        private static Description ConvertFromDescriptionDTO(DescriptionDTO dto)
-        {
-            return new Description(
-                dto.GroundWaterLevel,
-                dto.Polygon
-            );
-        }
-    }
+                var parts = str.Split(';');
+                if (parts.Length != 2 ||
+                    !double.TryParse(parts[0], out double x) ||
+                    !double.TryParse(parts[1], out double y))
+                    return new ObservablePoint { X = 0, Y = 0 };
 
-    public class PointConverter : JsonConverter<ObservablePoint>
-    {
-        public override ObservablePoint ReadJson(JsonReader reader, Type objectType, ObservablePoint existingValue, bool hasExistingValue, JsonSerializer serializer)
-        {
-            var str = reader.Value?.ToString();
-            if (string.IsNullOrEmpty(str)) return new ObservablePoint { X = 0, Y = 0 };
+                return new ObservablePoint { X = x, Y = y };
+            }
 
-            var parts = str.Split(';');
-            if (parts.Length != 2 ||
-                !double.TryParse(parts[0], out double x) ||
-                !double.TryParse(parts[1], out double y))
-                return new ObservablePoint { X = 0, Y = 0 };
-
-            return new ObservablePoint { X = x, Y = y };
-        }
-
-        public override void WriteJson(JsonWriter writer, ObservablePoint value, JsonSerializer serializer)
-        {
-            writer.WriteValue($"{value.X};{value.Y}");
+            public override void WriteJson(
+                JsonWriter writer,
+                ObservablePoint value,
+                JsonSerializer serializer)
+            {
+                writer.WriteValue($"{value.X:0.##};{value.Y:0.##}");
+            }
         }
     }
 }
