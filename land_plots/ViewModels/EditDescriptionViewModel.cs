@@ -17,7 +17,7 @@ namespace LandManagementApp.ViewModels
 
         public EditDescriptionViewModel(Description description)
         {
-            CurrentDescription = description?.Clone() ?? new Description();
+            CurrentDescription = description ?? new Description();
         }
         [RelayCommand]
         private void AddPoint()

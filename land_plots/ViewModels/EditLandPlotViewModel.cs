@@ -43,6 +43,7 @@ namespace LandManagementApp.ViewModels
             if (editWindow.ShowDialog() == true)
             {
                 OnPropertyChanged(nameof(CurrentPlot));
+                OnPropertyChanged(nameof(CurrentPlot.Description));
             }
         }
 
