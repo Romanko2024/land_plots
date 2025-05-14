@@ -6,6 +6,7 @@ using System.Windows; //для Point
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Media;
+using System.Collections.Specialized;
 
 namespace LandManagementApp.Models
 {
@@ -55,13 +56,30 @@ namespace LandManagementApp.Models
             set
             {
                 //чи кількість точок більше або дорівнює 3
-                if (value?.Count >= 3 || value == null)
+                if (_polygon != null)
                 {
-                    _polygon = value ?? new ObservableCollection<ObservablePoint>();
-                    OnPropertyChanged(nameof(Polygon));
-                    OnPropertyChanged(nameof(IsValid)); // + оновлення валідації
+                    _polygon.CollectionChanged -= Polygon_CollectionChanged;
+                    foreach (var point in _polygon)
+                        point.PropertyChanged -= Point_PropertyChanged;
                 }
+
+                _polygon = value ?? new ObservableCollection<ObservablePoint>();
+
+                _polygon.CollectionChanged += Polygon_CollectionChanged;
+                foreach (var point in _polygon)
+                    point.PropertyChanged += Point_PropertyChanged;
+
+                OnPropertyChanged(nameof(Polygon));
+                OnPropertyChanged(nameof(IsValid)); // + оновлення валідації
             }
+        }
+        private void Polygon_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(IsValid));
+        }
+        private void Point_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(IsValid));
         }
         //реалізац INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;

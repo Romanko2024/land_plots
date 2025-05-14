@@ -12,7 +12,7 @@
             <TextBlock Text="Координати полігону:" FontWeight="Bold"/>
             <DataGrid ItemsSource="{Binding CurrentDescription.Polygon}" 
                     AutoGenerateColumns="False"
-                    CanUserAddRows="True"
+                    CanUserAddRows="False"
                     CanUserDeleteRows="True"
                     AutoGeneratingColumn="DataGrid_AutoGeneratingColumn">
                 <DataGrid.Columns>
