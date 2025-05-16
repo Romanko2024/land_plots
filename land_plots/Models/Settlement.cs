@@ -7,10 +7,25 @@ using LandManagementApp.Utils;
 
 namespace LandManagementApp.Models
 {
-    public class Settlement
+    public class Settlement : INotifyPropertyChanged
     {
         private static int _totalCount;
         private List<LandPlot> _landPlots = new List<LandPlot>(); //список ділянок
+        private string _name;
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                _name = value;
+                OnPropertyChanged(nameof(Name));
+            }
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
         public static void ResetCounter(int startValue = 0)
         {
             _totalCount = startValue;

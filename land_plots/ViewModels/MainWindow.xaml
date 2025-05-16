@@ -23,7 +23,7 @@
             <!-- Випадаючий список населених пунктів -->
             <ComboBox ItemsSource="{Binding Settlements}"
                       SelectedItem="{Binding SelectedSettlement}"
-                      DisplayMemberPath="SerialNumber"
+                      DisplayMemberPath="Name"
                       Width="150"
                       Margin="5"/>
         </StackPanel>

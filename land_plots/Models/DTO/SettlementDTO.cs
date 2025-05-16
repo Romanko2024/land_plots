@@ -9,6 +9,7 @@ namespace LandManagementApp.Models.DTO
     public class SettlementDTO
     {
         public int SerialNumber { get; set; }
+        public string Name { get; set; }
         public List<LandPlotDTO> LandPlots { get; set; }
     }
 }

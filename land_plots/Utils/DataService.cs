@@ -68,13 +68,17 @@ namespace LandManagementApp.Utils
             return new SettlementDTO
             {
                 SerialNumber = settlement.SerialNumber,
+                Name = settlement.Name,
                 LandPlots = settlement.LandPlots.Select(ConvertToLandPlotDTO).ToList()
             };
         }
 
         private static Settlement ConvertFromSettlementDTO(SettlementDTO dto)
         {
-            var settlement = new Settlement();
+            var settlement = new Settlement
+            {
+                Name = dto.Name
+            };
             foreach (var plotDto in dto.LandPlots)
             {
                 settlement.AddLandPlot(ConvertFromLandPlotDTO(plotDto));

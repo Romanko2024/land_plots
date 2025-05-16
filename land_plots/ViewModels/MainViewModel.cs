@@ -42,9 +42,13 @@ namespace LandManagementApp.ViewModels
         [RelayCommand]
         private void AddSettlement()
         {
-            var newSettlement = new Settlement();
-            _settlements.Add(newSettlement);
-            SelectedSettlement = newSettlement;
+            var dialog = new AddSettlementWindow();
+            if (dialog.ShowDialog() == true)
+            {
+                var newSettlement = new Settlement { Name = dialog.SettlementName };
+                Settlements.Add(newSettlement);
+                SelectedSettlement = newSettlement;
+            }
         }
 
         [RelayCommand]
