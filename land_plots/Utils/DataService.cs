@@ -17,73 +17,47 @@ namespace LandManagementApp.Utils
         {
             Converters = { new PointConverter() },
             Formatting = Formatting.Indented,
-            PreserveReferencesHandling = PreserveReferencesHandling.Objects //для коректної серіалізації колекцій
+            PreserveReferencesHandling = PreserveReferencesHandling.None
         };
 
         public static void SaveSettlements(List<Settlement> settlements)
         {
-            // Конвертація Settlement -> SettlementDTO
-            try
+            var dtos = settlements.Select(s => new SettlementDTO
             {
-                var dtos = settlements.Select(ConvertToSettlementDTO).ToList();
-                var json = JsonConvert.SerializeObject(dtos, _settings);
-                File.WriteAllText(FilePath, json);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Помилка збереження: {ex.Message}");
-            }
-        }
+                SerialNumber = s.SerialNumber,
+                Name = s.Name,
+                LandPlots = s.LandPlots.Select(ConvertToLandPlotDTO).ToList(),
+                NextSerialNumber = Settlement.GetCurrentCounter()
+            }).ToList();
 
+            File.WriteAllText(FilePath, JsonConvert.SerializeObject(dtos, _settings));
+        }
         //завантаження всіх населених пунктів
         public static List<Settlement> LoadSettlements()
         {
-            try
+            if (!File.Exists(FilePath)) return new List<Settlement>();
+
+            var json = File.ReadAllText(FilePath);
+            var dtos = JsonConvert.DeserializeObject<List<SettlementDTO>>(json, _settings);
+            var settlements = new List<Settlement>();
+
+            //оновлення лічильника
+            if (dtos != null && dtos.Any())
             {
-                if (!File.Exists(FilePath)) return new List<Settlement>();
+                Settlement.ResetCounter(dtos.Max(d => d.NextSerialNumber));
+            }
 
-                var json = File.ReadAllText(FilePath);
-                var dtos = JsonConvert.DeserializeObject<List<SettlementDTO>>(json, _settings);
-
-                //оновлення лічильника
-                if (dtos.Any())
+            foreach (var dto in dtos)
+            {
+                var settlement = new Settlement
                 {
-                    var maxSerial = dtos.Max(s => s.SerialNumber);
-                    Settlement.ResetCounter(maxSerial);
-                }
-
-                return dtos.Select(ConvertFromSettlementDTO).ToList();
+                    Name = dto.Name,
+                };
+                settlement.LandPlots.AddRange(dto.LandPlots.Select(ConvertFromLandPlotDTO));
+                settlements.Add(settlement);
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Помилка завантаження: {ex.Message}");
-                return new List<Settlement>();
-            }
-        }
 
-        //конверт моделей <-> DTO
-
-        private static SettlementDTO ConvertToSettlementDTO(Settlement settlement)
-        {
-            return new SettlementDTO
-            {
-                SerialNumber = settlement.SerialNumber,
-                Name = settlement.Name,
-                LandPlots = settlement.LandPlots.Select(ConvertToLandPlotDTO).ToList()
-            };
-        }
-
-        private static Settlement ConvertFromSettlementDTO(SettlementDTO dto)
-        {
-            var settlement = new Settlement
-            {
-                Name = dto.Name
-            };
-            foreach (var plotDto in dto.LandPlots)
-            {
-                settlement.AddLandPlot(ConvertFromLandPlotDTO(plotDto));
-            }
-            return settlement;
+            return settlements;
         }
 
         private static LandPlotDTO ConvertToLandPlotDTO(LandPlot plot)
@@ -115,8 +89,6 @@ namespace LandManagementApp.Utils
             );
             return new LandPlot(owner, description, dto.Purpose, dto.MarketValue);
         }
-
-        //
 
         public class PointConverter : JsonConverter<ObservablePoint>
         {

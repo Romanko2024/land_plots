@@ -11,5 +11,6 @@ namespace LandManagementApp.Models.DTO
         public int SerialNumber { get; set; }
         public string Name { get; set; }
         public List<LandPlotDTO> LandPlots { get; set; }
+        public int NextSerialNumber { get; set; }
     }
 }

@@ -10,6 +10,7 @@ namespace LandManagementApp.Models
     public class Settlement : INotifyPropertyChanged
     {
         private static int _totalCount;
+        public static int GetCurrentCounter() => _totalCount;
         private List<LandPlot> _landPlots = new List<LandPlot>(); //список ділянок
         private string _name;
         public string Name
