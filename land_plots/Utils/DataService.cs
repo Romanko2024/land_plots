@@ -44,14 +44,15 @@ namespace LandManagementApp.Utils
             //оновлення лічильника
             if (dtos != null && dtos.Any())
             {
-                Settlement.ResetCounter(dtos.Max(d => d.NextSerialNumber));
+                int maxSerial = dtos.Max(d => d.SerialNumber);
+                Settlement.ResetCounter(maxSerial);
             }
 
             foreach (var dto in dtos)
             {
-                var settlement = new Settlement
+                var settlement = new Settlement(dto.SerialNumber)
                 {
-                    Name = dto.Name,
+                    Name = dto.Name
                 };
                 settlement.LandPlots.AddRange(dto.LandPlots.Select(ConvertFromLandPlotDTO));
                 settlements.Add(settlement);

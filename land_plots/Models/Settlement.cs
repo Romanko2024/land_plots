@@ -35,6 +35,11 @@ namespace LandManagementApp.Models
         public List<LandPlot> LandPlots => _landPlots;
         //автомат генер порядковий номер
         public Settlement() => SerialNumber = ++_totalCount;
+        public Settlement(int serialNumber)
+        {
+            SerialNumber = serialNumber;
+            _totalCount = Math.Max(_totalCount, serialNumber);
+        }
 
         //методи для керування ділянками
         public void AddLandPlot(LandPlot plot)
