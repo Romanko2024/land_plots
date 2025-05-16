@@ -9,6 +9,7 @@ using LandManagementApp.Models;
 using System.Windows;
 using LandManagementApp.Views;
 using LandManagementApp.ViewModels;
+using System.Collections.ObjectModel;
 
 namespace LandManagementApp.ViewModels
 {
@@ -19,11 +20,20 @@ namespace LandManagementApp.ViewModels
         [ObservableProperty]
         private LandPlot _currentPlot;
 
+        [ObservableProperty]
+        private Settlement _selectedSettlement;
+
+        public ObservableCollection<Settlement> Settlements { get; }
         public Array PurposeTypes => Enum.GetValues(typeof(PurposeType));
 
-        public EditLandPlotViewModel(LandPlot plot)
+        public EditLandPlotViewModel(
+        LandPlot plot,
+        ObservableCollection<Settlement> settlements,
+        Settlement currentSettlement = null)
         {
             _currentPlot = plot ?? new LandPlot();
+            Settlements = settlements;
+            SelectedSettlement = currentSettlement ?? Settlements.FirstOrDefault();
         }
 
         [RelayCommand]

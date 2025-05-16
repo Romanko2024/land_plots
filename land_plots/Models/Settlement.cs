@@ -44,16 +44,17 @@ namespace LandManagementApp.Models
         //методи для керування ділянками
         public void AddLandPlot(LandPlot plot)
         {
-            // Перевіряє, чи перетинається нова ділянка з уже наявними
-            if (LandPlots.Any(lp =>
-                PolygonOverlap.Check(
-                    lp.Description.Polygon, // Без конвертації
-                    plot.Description.Polygon
-                )))
+            if (LandPlots.Any(lp => PolygonOverlap.Check(lp.Description.Polygon, plot.Description.Polygon)))
                 throw new InvalidOperationException("Ділянки перетинаються!");
-            LandPlots.Add(plot);
+
+            plot.Settlement = this;
+            _landPlots.Add(plot);
         }
 
-        public void RemoveLandPlot(LandPlot plot) => _landPlots.Remove(plot);
+        public void RemoveLandPlot(LandPlot plot)
+        {
+            plot.Settlement = null;
+            _landPlots.Remove(plot);
+        }
     }
 }

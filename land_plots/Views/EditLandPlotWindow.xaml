@@ -5,7 +5,7 @@
         xmlns:local="clr-namespace:LandManagementApp.Utils"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         Title="Редагування ділянки" 
-        Height="500" 
+        Height="550" 
         Width="600"
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
@@ -98,7 +98,12 @@
                     </ControlTemplate>
                 </Validation.ErrorTemplate>
             </TextBox>
-
+            <!-- вибір населеного пункту -->
+            <TextBlock Text="Населений пункт:" FontWeight="Bold"/>
+            <ComboBox ItemsSource="{Binding Settlements}"
+                     SelectedItem="{Binding SelectedSettlement}"
+                     DisplayMemberPath="Name"
+                     Margin="0 5"/>
             <!-- Кнопки -->
             <StackPanel Orientation="Horizontal" 
                         HorizontalAlignment="Right" 

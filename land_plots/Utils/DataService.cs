@@ -60,6 +60,19 @@ namespace LandManagementApp.Utils
 
             return settlements;
         }
+        //
+        private static SettlementDTO ConvertToSettlementDTO(Settlement settlement)
+        {
+            return new SettlementDTO
+            {
+                SerialNumber = settlement.SerialNumber,
+                Name = settlement.Name,
+                LandPlots = settlement.LandPlots
+                    .Where(plot => plot.Settlement == settlement)
+                    .Select(ConvertToLandPlotDTO)
+                    .ToList()
+            };
+        }
 
         private static LandPlotDTO ConvertToLandPlotDTO(LandPlot plot)
         {

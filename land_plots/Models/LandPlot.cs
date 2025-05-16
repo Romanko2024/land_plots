@@ -16,7 +16,7 @@ namespace LandManagementApp.Models
         private Description _description;
         private PurposeType _purpose;
         private decimal _marketValue;
-
+        private Settlement _settlement;
         public LandPlot()
         {
             //ініціалізуємо обов'язкові поля за замовчуванням
@@ -107,7 +107,18 @@ namespace LandManagementApp.Models
 
         //метод КОРОТКОГО представлення у вигляді тексту
         public string Summary => $"{Owner.LastName} - {MarketValue:C}";
-
+        public Settlement Settlement
+        {
+            get => _settlement;
+            set
+            {
+                if (_settlement != value)
+                {
+                    _settlement = value;
+                    OnPropertyChanged(nameof(Settlement));
+                }
+            }
+        }
         public LandPlot Clone()
         {
             return new LandPlot(

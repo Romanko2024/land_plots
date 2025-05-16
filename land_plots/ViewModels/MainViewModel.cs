@@ -54,20 +54,20 @@ namespace LandManagementApp.ViewModels
         [RelayCommand]
         private void AddPlot()
         {
-            if (SelectedSettlement == null)
+            if (!Settlements.Any())
             {
-                MessageBox.Show("Оберіть населений пункт!");
+                MessageBox.Show("Спочатку додайте населений пункт!");
                 return;
             }
 
             var newPlot = new LandPlot();
-            var editWindow = new EditLandPlotWindow(newPlot);
+            var editWindow = new EditLandPlotWindow(newPlot, Settlements);
 
             if (editWindow.ShowDialog() == true)
             {
                 try
                 {
-                    SelectedSettlement.AddLandPlot(newPlot);
+                    editWindow.ViewModel.SelectedSettlement.AddLandPlot(newPlot);
                     OnPropertyChanged(nameof(CurrentLandPlots));
                 }
                 catch (Exception ex)
@@ -85,12 +85,14 @@ namespace LandManagementApp.ViewModels
             try
             {
                 var clone = SelectedPlot.Clone();
-                var editWindow = new EditLandPlotWindow(clone);
+                var editWindow = new EditLandPlotWindow(clone, Settlements, SelectedPlot.Settlement);
 
                 if (editWindow.ShowDialog() == true)
                 {
-                    SelectedSettlement!.LandPlots.Remove(SelectedPlot);
-                    SelectedSettlement.AddLandPlot(clone);
+                    SelectedPlot.Settlement.RemoveLandPlot(SelectedPlot);
+
+                    editWindow.ViewModel.SelectedSettlement.AddLandPlot(clone);
+
                     OnPropertyChanged(nameof(CurrentLandPlots));
                 }
             }
