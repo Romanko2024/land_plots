@@ -53,6 +53,8 @@ namespace LandManagementApp.Models
 
         public void RemoveLandPlot(LandPlot plot)
         {
+            if (plot == null) return;
+
             plot.Settlement = null;
             _landPlots.Remove(plot);
         }

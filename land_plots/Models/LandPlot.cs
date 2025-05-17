@@ -122,11 +122,14 @@ namespace LandManagementApp.Models
         public LandPlot Clone()
         {
             return new LandPlot(
-                Owner.Clone(),
+                Owner?.Clone(),
                 Description.Clone(),
                 Purpose,
                 MarketValue
-            );
+            )
+            {
+                Settlement = this.Settlement //копіюємо посилання на Settlement
+            };
         }
 
         public bool HasErrors =>

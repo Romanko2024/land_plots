@@ -32,8 +32,12 @@ namespace LandManagementApp.ViewModels
         Settlement currentSettlement = null)
         {
             _currentPlot = plot ?? new LandPlot();
-            Settlements = settlements;
+            Settlements = settlements ?? throw new ArgumentNullException(nameof(settlements));
             SelectedSettlement = currentSettlement ?? Settlements.FirstOrDefault();
+            if (_currentPlot.Settlement == null && SelectedSettlement != null)
+            {
+                _currentPlot.Settlement = SelectedSettlement;
+            }
         }
 
         [RelayCommand]

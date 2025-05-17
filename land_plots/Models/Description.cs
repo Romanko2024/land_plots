@@ -15,8 +15,14 @@ namespace LandManagementApp.Models
         //поля для збереження значень рівня води та полігону
         private int _groundWaterLevel;
         private ObservableCollection<ObservablePoint> _polygon = new ObservableCollection<ObservablePoint>();
-        public PointCollection PolygonAsPoints =>
-    new PointCollection(Polygon.Select(p => new Point(p.X, p.Y)));
+        public PointCollection PolygonAsPoints
+        {
+            get
+            {
+                var points = Polygon.Select(p => new Point(p.X, p.Y)).ToList();
+                return new PointCollection(points);
+            }
+        }
 
         //для створення об'єкта без ініціалізації
         public Description()

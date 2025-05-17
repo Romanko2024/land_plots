@@ -27,6 +27,12 @@ namespace LandManagementApp.ViewModels
         public ObservableCollection<LandPlot> CurrentLandPlots =>
             new ObservableCollection<LandPlot>(_selectedSettlement?.LandPlots ?? new List<LandPlot>());
 
+        partial void OnSelectedSettlementChanged(Settlement? value)
+        {
+            OnPropertyChanged(nameof(CurrentLandPlots));
+            OnPropertyChanged(nameof(SelectedSettlement));
+        }
+
         public MainViewModel()
         {
             // Завантаження всіх населених пунктів
@@ -80,18 +86,31 @@ namespace LandManagementApp.ViewModels
         [RelayCommand(CanExecute = nameof(CanEditPlot))]
         private void EditPlot()
         {
-            if (SelectedPlot == null) return;
+            if (SelectedPlot == null || SelectedPlot.Settlement == null)
+            {
+                MessageBox.Show("Оберіть ділянку та населений пункт!");
+                return;
+            }
 
             try
             {
                 var clone = SelectedPlot.Clone();
-                var editWindow = new EditLandPlotWindow(clone, Settlements, SelectedPlot.Settlement);
+                var editWindow = new EditLandPlotWindow(
+                    clone,
+                    Settlements,
+                    SelectedPlot.Settlement
+                );
 
                 if (editWindow.ShowDialog() == true)
                 {
+                    //видаляємо стару ділянку з поточного населеного пункту
                     SelectedPlot.Settlement.RemoveLandPlot(SelectedPlot);
 
-                    editWindow.ViewModel.SelectedSettlement.AddLandPlot(clone);
+                    //+оновлену ділянку до нового населеного пункту
+                    if (editWindow.ViewModel?.SelectedSettlement != null)
+                    {
+                        editWindow.ViewModel.SelectedSettlement.AddLandPlot(clone);
+                    }
 
                     OnPropertyChanged(nameof(CurrentLandPlots));
                 }
@@ -100,6 +119,10 @@ namespace LandManagementApp.ViewModels
             {
                 MessageBox.Show($"Помилка редагування: {ex.Message}");
             }
+        }
+        partial void OnSelectedPlotChanged(LandPlot? value)
+        {
+            EditPlotCommand.NotifyCanExecuteChanged();
         }
 
         [RelayCommand]

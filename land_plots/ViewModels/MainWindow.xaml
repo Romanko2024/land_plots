@@ -9,6 +9,19 @@
     </Window.DataContext>
     <Window.Resources>
         <local:NullToFalseConverter x:Key="NullToFalseConverter"/>
+        <Style TargetType="Polygon">
+            <Setter Property="Stroke" Value="#FF1E90FF"/>
+            <Setter Property="Fill" Value="#301E90FF"/>
+            <Setter Property="StrokeThickness" Value="2"/>
+            <Setter Property="ToolTip">
+                <Setter.Value>
+                    <StackPanel>
+                        <TextBlock Text="{Binding Owner.LastName}"/>
+                        <TextBlock Text="{Binding MarketValue, StringFormat='{}₴ {0:N2}'}"/>
+                    </StackPanel>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <DockPanel>
@@ -69,23 +82,28 @@
 
             <!-- Візуалізація полігонів -->
             <Canvas Grid.Column="1" Background="#FFF0F0F0">
-                <Viewbox Stretch="Uniform">
-                    <ItemsControl ItemsSource="{Binding CurrentLandPlots}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <Canvas/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Polygon Points="{Binding Description.PolygonAsPoints}"
-                                         Stroke="DarkBlue"
-                                         Fill="#60008FFF"
-                                         StrokeThickness="1.5"/>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </Viewbox>
+                <ItemsControl ItemsSource="{Binding CurrentLandPlots}"
+                  Visibility="{Binding SelectedSettlement, Converter={StaticResource NullToFalseConverter}}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Polygon Points="{Binding Description.PolygonAsPoints}"
+                         Stroke="DarkBlue"
+                         Fill="#60008FFF"
+                         StrokeThickness="1.5"
+                         Canvas.Left="0"
+                         Canvas.Top="0">
+                                <Polygon.LayoutTransform>
+                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                </Polygon.LayoutTransform>
+                            </Polygon>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </Canvas>
         </Grid>
     </DockPanel>
