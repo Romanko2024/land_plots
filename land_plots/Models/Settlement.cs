@@ -61,7 +61,9 @@ namespace LandManagementApp.Models
         {
             if (plot == null) return;
 
-            plot.Settlement = null;
+            if (plot.Settlement == this)
+                plot.Settlement = null;
+
             _landPlots.Remove(plot);
         }
     }

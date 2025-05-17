@@ -50,6 +50,10 @@
                     Command="{Binding EditPlotCommand}" 
                     IsEnabled="{Binding SelectedPlot, Converter={StaticResource NullToFalseConverter}}"
                     Margin="5"/>
+            <Button Content="🗑️ Видалити" 
+                    Command="{Binding DeletePlotCommand}" 
+                    IsEnabled="{Binding SelectedPlot, Converter={StaticResource NullToFalseConverter}}"
+                    Margin="5"/>
             <Button Content="💾 Зберегти та вийти" 
                     Command="{Binding SaveAndExitCommand}" 
                     Margin="5"/>

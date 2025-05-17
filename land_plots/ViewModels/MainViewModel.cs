@@ -123,6 +123,7 @@ namespace LandManagementApp.ViewModels
         partial void OnSelectedPlotChanged(LandPlot? value)
         {
             EditPlotCommand.NotifyCanExecuteChanged();
+            DeletePlotCommand.NotifyCanExecuteChanged();
         }
 
         [RelayCommand]
@@ -133,5 +134,32 @@ namespace LandManagementApp.ViewModels
         }
 
         private bool CanEditPlot() => SelectedPlot != null;
+
+        [RelayCommand(CanExecute = nameof(CanDeletePlot))]
+        private void DeletePlot()
+        {
+            if (SelectedPlot == null || SelectedSettlement == null) return;
+
+            var result = MessageBox.Show(
+                "Ви впевнені, що хочете видалити цю ділянку?",
+                "Підтвердження",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result != MessageBoxResult.Yes) return;
+
+            try
+            {
+                SelectedSettlement.RemoveLandPlot(SelectedPlot);
+                SelectedPlot = null;
+                OnPropertyChanged(nameof(CurrentLandPlots));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка видалення: {ex.Message}");
+            }
+        }
+
+        private bool CanDeletePlot() => SelectedPlot != null && SelectedSettlement != null;
     }
 }
