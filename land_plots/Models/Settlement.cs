@@ -44,10 +44,16 @@ namespace LandManagementApp.Models
         //методи для керування ділянками
         public void AddLandPlot(LandPlot plot)
         {
+            if (plot == null)
+                throw new ArgumentNullException(nameof(plot));
+
+            if (plot.Settlement != this)
+                plot.Settlement = this; //прив'язуємо ділянку до поточного населеного пункту
+
+            //перевірка на перетин з іншими ділянками
             if (LandPlots.Any(lp => PolygonOverlap.Check(lp.Description.Polygon, plot.Description.Polygon)))
                 throw new InvalidOperationException("Ділянки перетинаються!");
 
-            plot.Settlement = this;
             _landPlots.Add(plot);
         }
 
